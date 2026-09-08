@@ -38,6 +38,11 @@ def app(environ, start_response):
         headers = [('Content-type', 'application/json; charset=utf-8')]
         start_response('201 Created', headers)
         return [json.dumps(task).encode('utf-8')]
+    elif ruta == '/tasks' and metodo == 'DELETE':
+        tasks.clear()
+        headers = [('Content-type', 'text/plain; charset=utf-8')]
+        start_response('200 OK', headers)
+        return [b'Todas las tareas han sido eliminadas']
     else:
         headers = [('Content-type', 'text/plain; charset=utf-8')]
         start_response('404 Not Found', headers)
