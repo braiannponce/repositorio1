@@ -1,3 +1,4 @@
+import re
 import json
 from wsgiref.simple_server import make_server
 
@@ -38,15 +39,29 @@ def app(environ, start_response):
         headers = [('Content-type', 'application/json; charset=utf-8')]
         start_response('201 Created', headers)
         return [json.dumps(task).encode('utf-8')]
-    elif ruta == '/tasks' and metodo == 'DELETE':
-        tasks.clear()
-        headers = [('Content-type', 'text/plain; charset=utf-8')]
-        start_response('200 OK', headers)
-        return [b'Todas las tareas han sido eliminadas']
-    else:
-        headers = [('Content-type', 'text/plain; charset=utf-8')]
-        start_response('404 Not Found', headers)
-        return [b'Pagina no encontrada']
+    else: 
+        match = re.match(r'^/tasks/(\d+)$', ruta)
+        if match:
+            task_id = int(match.group(1))
+            if task_id not in tasks:
+                        headers = [('Content-type', 'text/plain; charset=utf-8')]
+                        start_response('404 Not Found', headers)
+                        return [b'Tarea no encontrada']
+            elif ruta == f'/tasks/{task_id}' and metodo == 'GET':
+                if task_id in tasks:
+                    headers = [('Content-type', 'application/json; charset=utf-8')]
+                    start_response('200 OK', headers)
+                    return [json.dumps(tasks[task_id]).encode('utf-8')]
+            elif ruta == f'/tasks/{task_id}' and metodo == 'DELETE':
+                del tasks[task_id]
+                headers = [('Content-type', 'text/plain; charset=utf-8')]
+                start_response('200 OK', headers)
+                return [b'Tarea eliminada']
+           
+    
+    headers = [('Content-type', 'text/plain; charset=utf-8')]
+    start_response('404 Not Found', headers)
+    return [b'Pagina no encontrada']
 
 if __name__ == '__main__':
     with make_server('', 9292, app) as httpd:
