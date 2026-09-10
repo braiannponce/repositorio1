@@ -25,7 +25,7 @@ def app(environ, start_response):
     if ruta == '/' and metodo == 'GET':
         headers = [('Content-type', 'text/plain; charset=utf-8')]
         start_response('200 OK', headers)
-        return [b'Hello, world!']
+        return [b'Bienvenido a la API de Tareas. Usa /tasks para interactuar con las tareas.']
     elif ruta == '/tasks' and metodo == 'GET':
         headers = [('Content-type', 'application/json; charset=utf-8')]
         start_response('200 OK', headers)
